@@ -59,7 +59,7 @@ def addBlab_1():
 
     BLABS[uid] = blab
 
-    convert_blab = {'id': BLABS[uid]}
+    convert_blab = {uid: BLABS[uid]}
     return_blab = return_schema(convert_blab)
 
     return return_blab[0]
@@ -75,7 +75,7 @@ def addBlab(id):
     """
 
     if id in BLABS:
-        convert_blab = {'id': BLABS[id]}
+        convert_blab = {uid: BLABS[id]}
         return_blabs = return_schema(convert_blab)
         del BLABS[id]
         return return_blabs[0]
