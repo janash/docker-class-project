@@ -1,10 +1,5 @@
 # docker-class-project
 
-To run this Docker image:
+This is my repo for the class project in CS2304. To see the specs, see this page: https://cs2304.mikesir87.io/
 
-1. Clone the repository
-2. Navigate to the cloned repo
-3. Run the command `docker-compose up`
-4. Open `localhost:5000` on your browser
-
-Currently, items are just added to a Python dictionary. This will be switched out for a database later.
+This repo is currently at milestone 2.
