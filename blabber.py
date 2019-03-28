@@ -101,10 +101,6 @@ def doGet(createdSince):
         if blab["postTime"] > created_since:
             new_blabs[id] = blab
 
-    #print(created_since)
-
-    #return_blabs = BLABS
-
     return_blabs = return_schema(new_blabs)
 
     return return_blabs
