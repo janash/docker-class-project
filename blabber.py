@@ -3,7 +3,7 @@ Functions for API endpoints for blabber
 """
 
 # System modules
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 
 # 3rd party modules
@@ -26,7 +26,7 @@ def return_schema(blab):
 
 BLABS = {
     str(uuid.uuid1()): {
-    "postTime": get_timestamp(),
+    "postTime": datetime.now(),
     "author": {
         "email" : "fake_email@vt.edu",
         "name" : "Blabber User",
@@ -35,7 +35,7 @@ BLABS = {
         },
 
         str(uuid.uuid1()): {
-        "postTime": get_timestamp(),
+        "postTime": datetime.now(),
         "author": {
             "email" : "fake_email@vt.edu",
             "name" : "Another User",
@@ -50,7 +50,7 @@ def addBlab_1():
     """
     blab = {}
 
-    blab['postTime'] = get_timestamp()
+    blab['postTime'] = datetime.now()
     uid = str(uuid.uuid1())
 
     json_data = request.get_json(force=True)
@@ -84,7 +84,7 @@ def addBlab(id):
             404, "Blab with uid {uid} not found".format(uid=id)
         )
 
-def doGet():
+def doGet(createdSince):
     """
     This function response to an api request with the complete list of blabs.
 
@@ -93,6 +93,18 @@ def doGet():
     all_blabs: str
         json string with list of blabs
     """
-    return_blabs = return_schema(BLABS)
+    created_since = datetime.fromtimestamp(createdSince)
+
+    new_blabs = {}
+
+    for id, blab in BLABS.items():
+        if blab["postTime"] > created_since:
+            new_blabs[id] = blab
+
+    #print(created_since)
+
+    #return_blabs = BLABS
+
+    return_blabs = return_schema(new_blabs)
 
     return return_blabs
