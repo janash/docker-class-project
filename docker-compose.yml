@@ -8,23 +8,26 @@ services:
     ports:
       - 5000:5000
     labels:
-      - "traefik.backend=server"
+      - "traefik.backend=server.localhost/blabs"
       - "traefik.frontend.rule=PathStrip:/api/"
       - "traefik.port=5000"
+
+  client:
+    image: vtcs2304s19/blabber-client
+    ports:
+      - 80:80
+    labels:
+      - "traefik.backend=server"
+      - "traefik.frontend.rule=Host:server.localhost"
+      - "traefik.port=5000"
+
   reverse-proxy:
     image: traefik # The official Traefik docker image
     command: --api --docker # Enables the web UI and tells Traefik to listen to docker
     ports:
       - "8080:8080" # The Web UI (enabled by --api)
-      - "80:80"
     labels:
       - "traefik.backend=reverse-proxy"
-      - "traefik.port=5000"
+      - "traefik.port=8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
-  client:
-    image: vtcs2304s19/blabber-client
-    labels:
-      - "traefik.backend=client"
-      - "traefik.frontend.rule=Host:client.localhost"
-      - "traefik.port=80"
