@@ -4,7 +4,7 @@ Functions for API endpoints for blabber
 # System modules
 from datetime import datetime, timedelta
 import uuid
-from bson.json_util import dumps
+import copy
 
 # 3rd party modules
 from flask import make_response, abort, request, jsonify
@@ -27,11 +27,12 @@ def addBlab_1():
     new_blab['postTime'] = datetime.now()
     new_blab['author'] = json_data['author']
     new_blab['message'] = json_data['message']
+    return_blab = copy.deepcopy(new_blab)
 
     # Add blab to db
     mongo.db.blabs.insert_one(new_blab)
 
-    return jsonify(new_blab)
+    return jsonify(return_blab)
 
 def addBlab(id):
     """
@@ -71,6 +72,7 @@ def doGet(createdSince=0):
     return_blabs = []
 
     for blab in created_since_blabs:
+        del blab["_id"]
         return_blabs.append(blab)
 
     return return_blabs
