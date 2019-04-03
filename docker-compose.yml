@@ -1,16 +1,28 @@
 version: '3.7'
 
 services:
-  server:
+  api:
     build: .
     volumes:
       - ./:/app/
     ports:
       - 5000:5000
     labels:
-      - "traefik.backend=server"
+      - "traefik.backend=api"
       - "traefik.frontend.rule=Host:localhost;PathPrefixStrip:/api"
       - "traefik.port=5000"
+
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - ./data/:/data/db
+    ports:
+      - 27017:27017
+    labels:
+      - "traefik.backend=mongo"
+      - "traefik.frontend.rule=Host:mongo.localhost"
+      - "traefik.port=27017"
 
   reverse-proxy:
     image: traefik # The official Traefik docker image
