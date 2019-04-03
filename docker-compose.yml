@@ -7,21 +7,25 @@ services:
       - ./:/app/
     ports:
       - 5000:5000
+    links:
+      - mongodb
+    environment:
+      - DB=mongodb://mongodb:27017/blabber
     labels:
       - "traefik.backend=api"
       - "traefik.frontend.rule=Host:localhost;PathPrefixStrip:/api"
       - "traefik.port=5000"
 
-  mongo:
+  mongodb:
     image: mongo
     restart: always
     volumes:
       - ./data/:/data/db
-    ports:
-      - 27017:27017
+    expose:
+      - 27017
     labels:
-      - "traefik.backend=mongo"
-      - "traefik.frontend.rule=Host:mongo.localhost"
+      - "traefik.backend=mongodb"
+      - "traefik.frontend.rule=Host:mongodb.localhost"
       - "traefik.port=27017"
 
   reverse-proxy:

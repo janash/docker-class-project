@@ -1,68 +1,37 @@
 """
 Functions for API endpoints for blabber
 """
-
 # System modules
 from datetime import datetime, timedelta
 import uuid
+from bson.json_util import dumps
 
 # 3rd party modules
 from flask import make_response, abort, request, jsonify
-
-def get_timestamp():
-    return datetime.now().strftime(("%Y-%m-%d %H:%M:%S"))
-
-def return_schema(blab):
-    responses = []
-
-    for uid in blab.keys():
-        response = {}
-        response["id"] = uid
-        response["postTime"] = blab[uid]["postTime"]
-        response["author"] = blab[uid]["author"]
-        response["message"] = blab[uid]["message"]
-        responses.append(response)
-    return responses
-
-BLABS = {
-    str(uuid.uuid1()): {
-    "postTime": datetime.now(),
-    "author": {
-        "email" : "fake_email@vt.edu",
-        "name" : "Blabber User",
-        },
-    "message" : "First Blab"
-        },
-
-        str(uuid.uuid1()): {
-        "postTime": datetime.now(),
-        "author": {
-            "email" : "fake_email@vt.edu",
-            "name" : "Another User",
-            },
-        "message" : "Second Blab"
-            },
-    }
+from flask_pymongo import PyMongo
+from pymongo import MongoClient
+from server import mongo
 
 def addBlab_1():
     """
-    This function creates a new blab in the BLAB structure.
+    This function creates a new blab.
     """
-    blab = {}
-
-    blab['postTime'] = datetime.now()
-    uid = str(uuid.uuid1())
-
+    # Get input data - from user
     json_data = request.get_json(force=True)
-    blab['author'] = json_data['author']
-    blab['message'] = json_data['message']
 
-    BLABS[uid] = blab
+    # Create empty blab
+    new_blab = {}
 
-    convert_blab = {uid: BLABS[uid]}
-    return_blab = return_schema(convert_blab)
+    # Fill in info for blab
+    new_blab['id'] = str(uuid.uuid1())
+    new_blab['postTime'] = datetime.now()
+    new_blab['author'] = json_data['author']
+    new_blab['message'] = json_data['message']
 
-    return return_blab[0]
+    # Add blab to db
+    mongo.db.blabs.insert_one(new_blab)
+
+    return jsonify(new_blab)
 
 def addBlab(id):
     """
@@ -73,18 +42,19 @@ def addBlab(id):
     uid: str
         The unique id of the blab to remove
     """
+    #blab = mongo.db.blabs.find_one({'_id': id})
+    db_response = mongo.db.blabs.remove({'id': id})
 
-    if id in BLABS:
-        convert_blab = {uid: BLABS[id]}
-        return_blabs = return_schema(convert_blab)
-        del BLABS[id]
-        return return_blabs[0]
+    if db_response["n"] == 1:
+        return "Blab successfully deleted."
     else:
         abort(
-            404, "Blab with uid {uid} not found".format(uid=id)
-        )
+        404, "Blab with uid {uid} not found".format(uid=id)
+    )
 
-def doGet(createdSince):
+    return True
+
+def doGet(createdSince=0):
     """
     This function response to an api request with the complete list of blabs.
 
@@ -93,14 +63,14 @@ def doGet(createdSince):
     all_blabs: str
         json string with list of blabs
     """
+
     created_since = datetime.fromtimestamp(createdSince)
 
-    new_blabs = {}
+    created_since_blabs = mongo.db.blabs.find()
 
-    for id, blab in BLABS.items():
-        if blab["postTime"] > created_since:
-            new_blabs[id] = blab
+    return_blabs = []
 
-    return_blabs = return_schema(new_blabs)
+    for blab in created_since_blabs:
+        return_blabs.append(blab)
 
     return return_blabs
