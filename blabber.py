@@ -24,7 +24,7 @@ def addBlab_1():
 
     # Fill in info for blab
     new_blab['id'] = str(uuid.uuid1())
-    new_blab['postTime'] = datetime.now()
+    new_blab['postTime'] = datetime.utcnow()
     new_blab['author'] = json_data['author']
     new_blab['message'] = json_data['message']
     return_blab = copy.deepcopy(new_blab)
@@ -38,8 +38,8 @@ def addBlab(id):
     """
     Remove a blab
 
-    Parameters:
-    ------------
+    Parameters
+    ----------
     uid: str
         The unique id of the blab to remove
     """
@@ -59,15 +59,20 @@ def doGet(createdSince=0):
     """
     This function response to an api request with the complete list of blabs.
 
-    Return
-    ---------------
+    Parameters
+    ----------
+    createdSince: str
+        string representation of UTC datetime
+
+    Returns
+    -------
     all_blabs: str
         json string with list of blabs
     """
 
     created_since = datetime.fromtimestamp(createdSince)
 
-    created_since_blabs = mongo.db.blabs.find()
+    created_since_blabs = mongo.db.blabs.find({'postTime': { '$gt': created_since } })
 
     return_blabs = []
 

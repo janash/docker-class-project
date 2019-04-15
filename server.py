@@ -39,13 +39,6 @@ def home():
 
 # If we're running in stand alone mode, run the application
 if __name__ == '__main__':
-    blab = {}
-    blab['postTime'] = datetime.now()
-    blab['author'] = 'Author 1'
-    blab['message'] = 'This is my message'
-
-    # Add blab to db
-    #blabs.insert_one(blab)
     # Read the swagger.yml file to configure the endpoints
     connex.add_api('swagger.json', resolver=connexion.resolver.RestyResolver('api'))
 
