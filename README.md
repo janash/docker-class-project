@@ -6,6 +6,6 @@ This repo is currently at milestone 3.
 
 To try out the container, clone the repo and use the command (assuming you have docker installed)
 
-`docker compose up`
+`docker-compose up`
 
 Then, open a browser to localhost.
