@@ -24,7 +24,7 @@ def addBlab_1():
 
     # Fill in info for blab
     new_blab['id'] = str(uuid.uuid1())
-    new_blab['postTime'] = datetime.utcnow()
+    new_blab['postTime'] = datetime.utcnow().timestamp()
     new_blab['author'] = json_data['author']
     new_blab['message'] = json_data['message']
     return_blab = copy.deepcopy(new_blab)
@@ -32,7 +32,7 @@ def addBlab_1():
     # Add blab to db
     mongo.db.blabs.insert_one(new_blab)
 
-    return jsonify(return_blab)
+    return make_response(jsonify(return_blab), 201)
 
 def addBlab(id):
     """
@@ -57,7 +57,7 @@ def addBlab(id):
 
 def doGet(createdSince=0):
     """
-    This function response to an api request with the complete list of blabs.
+    This function responds to an api request with a list of blabs created since the specified timestamp.
 
     Parameters
     ----------
@@ -70,7 +70,7 @@ def doGet(createdSince=0):
         json string with list of blabs
     """
 
-    created_since = datetime.fromtimestamp(createdSince)
+    created_since = datetime.utcfromtimestamp(createdSince)
 
     created_since_blabs = mongo.db.blabs.find({'postTime': { '$gt': created_since } })
 
