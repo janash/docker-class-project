@@ -43,3 +43,12 @@ services:
       - "traefik.backend=client"
       - "traefik.frontend.rule=Host:localhost"
       - "traefik.port=80"
+
+  tests:
+    image: vtcs2304s19/blabber-api-tests:milestone3
+    environment:
+      SERVICE_NAME: api
+      API_PORT: "5000"
+    labels:
+      - "traefix.backend=tests"
+      - "traefik.frontend.rule=Host:localhost.tests"
